@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -57,7 +58,12 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+
+
+def enableProguardInReleaseBuilds = true
+
+
+
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -92,22 +98,33 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file("my-upload-key.keystore")
+                storePassword "gowtham"
+                keyAlias "my-key-alias"
+                keyPassword "gowtham"
+            }
+            
+            }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-                manifestPlaceholders = [ appAuthRedirectScheme: "com.quizzerrai" ] 
+            manifestPlaceholders = [ appAuthRedirectScheme: "com.quizzerrai" ] 
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-                manifestPlaceholders = [ appAuthRedirectScheme: "com.quizzerrai" ] 
+            manifestPlaceholders = [ appAuthRedirectScheme: "com.quizzerrai" ]
+            signingConfig signingConfigs.release 
         }
     }
 }
+
+
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
@@ -118,4 +135,14 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+   implementation project(':react-native-vector-icons')
 }
+
+ project.ext.react = [
+   enableHermes: true,
+]
+
+project.ext.vectoricons = [
+    iconFontNames: [ 'MaterialIcons.ttf', 'EvilIcons.ttf' ] // Specify font files
+]
+
